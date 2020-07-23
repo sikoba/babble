@@ -15,8 +15,8 @@ GIT_DESCRIBE="$(git describe --tags --always)"
 GIT_IMPORT="github.com/mosaicnetworks/babble/src/version"
 
 # Determine the arch/os combos we're building for
-XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
-XC_OS=${XC_OS:-"solaris darwin freebsd linux windows"}
+XC_ARCH=${XC_ARCH:-"amd64"}
+XC_OS=${XC_OS:-"linux"}
 
 # Get Go deps
 go mod vendor
@@ -26,7 +26,7 @@ echo "==> Building..."
 "$(which gox)" \
 		-os="${XC_OS}" \
 		-arch="${XC_ARCH}" \
-		-osarch="!darwin/arm !solaris/amd64 !freebsd/amd64" \
+		-osarch="!solaris/amd64 !freebsd/amd64" \
 		-ldflags "-X ${GIT_IMPORT}.GitCommit='${GIT_COMMIT}' -X ${GIT_IMPORT}.GitDescribe='${GIT_DESCRIBE}'" \
 		-output "build/pkg/{{.OS}}_{{.Arch}}/babble" \
 		-tags="${BUILD_TAGS}" \
