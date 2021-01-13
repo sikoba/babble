@@ -184,6 +184,7 @@ func (n *NetworkTransport) getConn(target string, timeout time.Duration) (*netCo
 	// Dial a new connection
 	conn, err := n.stream.Dial(target, timeout)
 	if err != nil {
+		n.logger.WithField("error at Dial", err).Error("getConn()")
 		return nil, err
 	}
 
@@ -242,8 +243,9 @@ func (n *NetworkTransport) genericRPC(target string, rpcType uint8, timeout time
 	// Get a conn
 	conn, err := n.getConn(target, timeout)
 	if err != nil {
+		n.logger.WithField("error at getConn", err).Error("genericRPC()")
 		return err
-	}
+	}	
 
 	// Set a deadline
 	if timeout > 0 {
@@ -252,6 +254,7 @@ func (n *NetworkTransport) genericRPC(target string, rpcType uint8, timeout time
 
 	// Send the RPC
 	if err = sendRPC(conn, rpcType, args); err != nil {
+		n.logger.WithField("error at sendRPC", err).Error("genericRPC()")
 		return err
 	}
 
@@ -269,12 +272,14 @@ func sendRPC(conn *netConn, rpcType uint8, args interface{}) error {
 	// Write the request type
 	if err := conn.w.WriteByte(rpcType); err != nil {
 		conn.Release()
+		
 		return err
 	}
 
 	// Send the request
 	if err := conn.enc.Encode(args); err != nil {
 		conn.Release()
+		
 		return err
 	}
 
