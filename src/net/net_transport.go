@@ -260,6 +260,9 @@ func (n *NetworkTransport) genericRPC(target string, rpcType uint8, timeout time
 
 	// Decode the response
 	canReturn, err := decodeResponse(conn, resp)
+	if err != nil {
+		n.logger.WithField("error at decodeResponse", err).Error("genericRPC()")
+	}
 	if canReturn {
 		n.returnConn(conn)
 	}
